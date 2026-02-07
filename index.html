@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Ball · Archivo Vivo del Multiverso</title>
+
+<style>
+:root{
+  --bg:#0b0b12;
+  --panel:#111827;
+  --glow:#5ddcff;
+  --danger:#ff4d6d;
+  --text:#e8e9ff;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:
+    linear-gradient(0deg,rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px),
+    var(--bg);
+  background-size:40px 40px;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* HEADER */
+header{
+  padding:2rem 1rem;
+  text-align:center;
+}
+h1{
+  font-size:clamp(2.2rem,6vw,4rem);
+  letter-spacing:.04em;
+  text-shadow:0 0 25px var(--glow);
+}
+.subtitle{
+  opacity:.8;
+}
+
+/* UNIVERSOS */
+.universos{
+  display:flex;
+  gap:1rem;
+  padding:1rem;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+}
+.universo{
+  min-width:240px;
+  scroll-snap-align:start;
+  background:var(--panel);
+  border-radius:20px;
+  padding:1.5rem;
+  box-shadow:0 0 25px #000;
+  cursor:pointer;
+  transition:.3s;
+}
+.universo:hover{
+  box-shadow:0 0 30px var(--glow);
+  transform:translateY(-4px);
+}
+
+/* CRONISTA */
+#cronista{
+  margin:1rem;
+  padding:1.2rem;
+  background:rgba(0,0,0,.4);
+  border-left:4px solid var(--glow);
+  font-style:italic;
+}
+
+/* SCROLL NARRATIVO */
+.saga{
+  padding:1rem;
+}
+.media-scroll{
+  display:flex;
+  gap:1rem;
+  overflow-x:auto;
+}
+.media{
+  min-width:260px;
+  height:160px;
+  border-radius:16px;
+  background:#000;
+  box-shadow:0 0 20px #000;
+  overflow:hidden;
+}
+.media video,
+.media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* PERSONAJES */
+.personajes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
+  gap:1rem;
+  padding:1rem;
+}
+.personaje{
+  text-align:center;
+}
+.personaje img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  box-shadow:0 0 15px var(--glow);
+}
+
+/* ÁRBOL */
+.arbol{
+  padding:1rem;
+}
+.arbol input{
+  width:100%;
+  padding:.6rem;
+  border-radius:8px;
+  border:none;
+}
+.arbol ul{
+  list-style:none;
+  padding-left:1rem;
+}
+.arbol li{
+  cursor:pointer;
+  padding:.2rem 0;
+}
+
+/* CORRUPCIÓN */
+.corrupto{
+  animation:glitch .15s infinite;
+}
+@keyframes glitch{
+  0%{filter:hue-rotate(0deg)}
+  50%{filter:hue-rotate(120deg) saturate(1.4)}
+  100%{filter:hue-rotate(0deg)}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Archivo Vivo del Multiverso</h1>
+  <div class="subtitle">El archivo observa. El archivo recuerda.</div>
+</header>
+
+<section class="universos">
+  <div class="universo" onclick="cambiarUniverso('Dragon Ball')">Dragon Ball</div>
+  <div class="universo" onclick="cambiarUniverso('Dragon Ball Z')">Dragon Ball Z</div>
+  <div class="universo" onclick="cambiarUniverso('Dragon Ball Super')">Dragon Ball Super</div>
+  <div class="universo" onclick="cambiarUniverso('Dragon Ball GT')">Dragon Ball GT</div>
+</section>
+
+<section id="cronista">
+“El tiempo aún permanece estable.”
+</section>
+
+<!-- SAGAS -->
+<section class="saga">
+<h2>Registro Visual</h2>
+<div class="media-scroll">
+  <!-- Reemplazá src por tus videos/gifs reales -->
+  <div class="media"><video src="" autoplay muted loop playsinline></video></div>
+  <div class="media"><img src="" alt=""></div>
+  <div class="media"><video src="" autoplay muted loop playsinline></video></div>
+</div>
+</section>
+
+<!-- PERSONAJES -->
+<section>
+<h2 style="padding:1rem">Personajes</h2>
+<div class="personajes">
+  <div class="personaje"><img src=""><div>Goku</div></div>
+  <div class="personaje"><img src=""><div>Vegeta</div></div>
+  <div class="personaje"><img src=""><div>Freezer</div></div>
+  <div class="personaje"><img src=""><div>Broly</div></div>
+</div>
+</section>
+
+<!-- ÁRBOL -->
+<section class="arbol">
+<h2>Árbol del Multiverso</h2>
+<input placeholder="Buscar..." oninput="filtrar(this.value)">
+<ul id="arbol">
+  <li>Dragon Ball
+    <ul>
+      <li>Goku</li>
+      <li>Bulma</li>
+    </ul>
+  </li>
+  <li>Dragon Ball Z
+    <ul>
+      <li>Vegeta</li>
+      <li>Freezer</li>
+    </ul>
+  </li>
+</ul>
+</section>
+
+<audio id="static" loop></audio>
+
+<script>
+let universoActual=null;
+let corrupto=false;
+
+const cronistaTextos={
+  normal:[
+    "El flujo del tiempo permanece estable.",
+    "Cada universo conserva su forma.",
+  ],
+  corrupcion:[
+    "El multiverso se desgarra.",
+    "Has forzado líneas prohibidas del tiempo.",
+  ]
+};
+
+function hablar(texto){
+  document.getElementById("cronista").innerText="“"+texto+"”";
+}
+
+function cambiarUniverso(u){
+  if(universoActual && universoActual!==u){
+    activarCorrupcion();
+  }
+  universoActual=u;
+  hablar("Has ingresado al universo "+u+".");
+}
+
+function activarCorrupcion(){
+  if(corrupto) return;
+  corrupto=true;
+  document.body.classList.add("corrupto");
+  hablar(cronistaTextos.corrupcion[Math.floor(Math.random()*2)]);
+}
+
+function filtrar(q){
+  q=q.toLowerCase();
+  document.querySelectorAll("#arbol li").forEach(li=>{
+    li.style.display=li.textContent.toLowerCase().includes(q)?"block":"none";
+  });
+}
+
+/* DOBLE TAP */
+let last=0;
+document.addEventListener("click",()=>{
+  const now=Date.now();
+  if(now-last<300) activarCorrupcion();
+  last=now;
+});
+
+/* EXPORTAR */
+document.addEventListener("keydown",e=>{
+  if(e.key==="s"||e.key==="S"){
+    const blob=new Blob([document.documentElement.outerHTML],{type:"text/html"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="DragonBall_Archivo_Vivo.html";
+    a.click();
+  }
+});
+</script>
+
+</body>
+</html>
